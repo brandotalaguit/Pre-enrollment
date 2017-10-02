@@ -1,0 +1,3 @@
+**** QUERIES USED ****
+INSERT INTO tblstudgrade (`StudNo`, `CourseId`, `nametable`, `StrGrade`, `StrLab`, `Remarks`)
+SELECT `STUDID`, `CourseId`, `NAMETABLE`, `STRGRADE`, `STRLAB`, `REMARKS` FROM `stud_grade213` WHERE CourseId != 0

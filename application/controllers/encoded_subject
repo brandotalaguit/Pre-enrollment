@@ -1,0 +1,39 @@
+public function encoded_subjects_assessment()
+    {
+    	if(!$_SESSION['enrollment_trans']['IsEncoded'])
+    		redirect('student/');
+
+    	if($_SESSION['enrollment_trans']['AssessedDateTime'] == '0000-00-00 00:00:00')
+    	{
+    		$this->M_enroll->update_enrollment_trans($_SESSION['enrollment_trans']['Id'],0,1);			
+    	}
+
+    		$data['ownedvoters'] = $this->M_assessment->getVotersCertificate($_SESSION['student_info']['StudNo']);
+	    	$data['printbutton'] = '';
+
+	    	if ($_SESSION['student_curriculum']['CollegeId'] != "6") :	# COAHS
+    		// if( $data['ownedvoters'] == TRUE && $_SESSION['student_curriculum']['CollegeId'] != "6") :
+		    	$this->M_enroll->update_enrollment_trans($_SESSION['enrollment_trans']['Id'],0,1);
+
+		        $data['AssDetails1'] = $this->M_assessment->getStudentOrg($_SESSION['student_info']['StudNo'],$_SESSION['student_curriculum']['CollegeId'],$_SESSION['student_curriculum']['ProgramId'],$_SESSION['student_curriculum']['MajorId']);
+		        $data['AssDetails2'] = $this->M_assessment->getAssPerSubject($_SESSION['student_info']['StudNo']);
+		        $data['AssDetails3'] = $this->M_assessment->getScholarship($_SESSION['student_info']['StudNo']);
+		        $data['AssDetails4'] = $this->M_assessment->getTuitionFee($_SESSION['student_info']['StudNo']);
+		        $data['AssDetailsNstp'] = $this->M_assessment->getNSTPFEE($_SESSION['student_info']['StudNo']);
+		        $data['AssDetailsLabFee'] = $this->M_assessment->getLabFee($_SESSION['student_info']['StudNo']);
+		        $this->M_assessment->AssessStudent($_SESSION['student_info']['StudNo'],$_SESSION['sy_sem']['SemId'],$_SESSION['sy_sem']['SyId'],$_SESSION['student_curriculum']['CollegeId'],$_SESSION['student_curriculum']['ProgramId'],$_SESSION['student_curriculum']['MajorId']);
+		    else:
+		    	$data['printbutton'] .= "<p class='lead'>Next step:<br/>";
+		    	$data['printbutton'] .= "<span style='color:red;'>Please print this advising slip and proceed to Accounting Office for your assessment.</span>";
+		    	// $data['printbutton'] .= "<br/><br/><a href='".base_url()."student/print_encoded_subjects_assessment/' class='btn btn-primary btn-large' target='_blank'><b>VIEW PRINTER FRIENDLY VERSION</b> <i class='icon-print icon-white'></i> </a><br/><br/>";
+		    endif;
+
+    	$data['selected_schedule'] = $this->M_enroll->get_selected_schedule($_SESSION['student_id'],$_SESSION['sy_sem']['SyId'],$_SESSION['sy_sem']['SemId']);
+    	$data['rooms'] = $this->db->join('tblbuilding as B','A.BuildingId = B.BuildingId')->get('tblroom as A')->result_array();
+    	
+
+    	$data['main_content'] = 'encoded_subjects_assessment';
+    	$this->M_enroll->update_logged_out($_SESSION['student_id']);
+        $this->M_enroll->set_user_logs('View Encoded Subjects and Assessment');
+        $this->load->view('template_student',$data);
+    }
